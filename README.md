@@ -9,9 +9,7 @@
   Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
   choco install habitat -y
   ```
-1. Setup habitat
 
-  `hab setup`
 1. Create working directory for building your application
 
   ```
@@ -19,18 +17,25 @@
   cd packer
   ```
 
+1. Setup habitat
+
+  `hab setup`
+
+  You will have to set up your origin and keys following [this guide ](https://www.habitat.sh/docs/using-builder/)
+
 1. Initialize plan for the application build
 
-  `hab plan init`
+  `hab plan init -w`
 1. Launch windows based studio VM. We want a 'clean throwaway environment' to build in AND want to avoid using Docker.
 
   ```
+  kitchen list
   kitchen converge
-  kitchen login
   ```
 
 ### On the Windows Studio VM
 
+1. Log into the Windows VM (vagrant/vagrant)
 1. Change to the mounted habitat directory
 
   `cd /tmp/package`
@@ -38,7 +43,7 @@
 1. You can either build your app on the VM OR use the habitat studio on the VM (what's the difference?)
 
   ```
-  hab studio enter
+  hab studio enter -
   ```
 
 ### In the Habitat Studio (on the VM)
