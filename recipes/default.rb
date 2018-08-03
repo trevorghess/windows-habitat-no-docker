@@ -6,7 +6,7 @@
 
 include_recipe 'chocolatey::default'
 
-%w( habitat googlechrome ).each do |pkg|
+%w( habitat ).each do |pkg|
   chocolatey_package pkg do
     action :install
   end
