@@ -14,7 +14,7 @@ platforms:
   - name: windows-2016
     driver_config:
       box: mwrock/Windows2016
-
+  - name: ubuntu-18.04
 
 suites:
   - name: default
@@ -24,3 +24,14 @@ suites:
       inspec_tests:
         - test/smoke/default
     attributes:
+    excludes:
+      - ubuntu-18.04
+  - name: linux
+    run_list:
+      - recipe[windows-habitat-no-docker::linux]
+    verifier:
+      inspec_tests:
+        - test/smoke/default
+    attributes:
+    excludes:
+      - windows-2016
