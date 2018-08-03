@@ -13,9 +13,9 @@ include_recipe 'chocolatey::default'
 end
 
 powershell_script 'habitat build' do
-  cwd '/tmp/package'
+  cwd '/tmp/package/habitat'
   code <<-EOH
   $env:PATH += ";C:\habitat"
-  hab pkg build
+  hab pkg build --windows
   EOH
 end
