@@ -1,0 +1,70 @@
+{
+    "variables": {
+      "subscription_id": "{{ env `AZURE_SUBSCRIPTION_ID` }}",
+      "tenant_id": "{{ env `AZURE_TENANT_ID` }}",
+      "client_id": "{{ env `AZURE_CLIENT_ID` }}",
+      "client_secret": "{{ env `AZURE_CLIENT_SECRET` }}",
+      "azure_storage_account": "{{ env `AZURE_APPMOD_STORAGE_ACCT` }}",
+      "azure_resource_group": "{{ env `AZURE_APPMOD_RESOURCE_GROUP` }}",
+      "azure_object_id": "{{ env `AZURE_OBJECT_ID` }}",
+      "azure_location": "East US",
+      "winrm_username": "hab",
+      "winrm_password": "n0t@r34lp@ssword!",
+      "customer_name": "Test",
+      "dept": "customer-success",
+      "instance_type": "Standard_DS4_v2",
+      "ISO_URL": "{{ env `WINDOWS_SERVER_ISO_URL` }}",
+      "ISO_Name": "{{ env `WINDOWS_SERVER_ISO_NAME` }}"
+    },
+    "builders": [
+      {
+        "type": "azure-arm",
+        "os_type": "windows",
+        "client_id": "{{ user `client_id` }}",
+        "client_secret": "{{ user `client_secret` }}",
+        "subscription_id": "{{ user `subscription_id` }}",
+        "object_id": "{{ user `azure_object_id` }}",
+        "location": "{{ user `azure_location` }}",
+        "image_publisher": "MicrosoftWindowsServer",
+        "image_offer": "WindowsServer",
+        "image_sku": "2016-Datacenter",
+        "capture_container_name": "images",
+        "capture_name_prefix": "workstation-{{timestamp}}",
+        "custom_data_file": "../templates/windows_bootstrap.txt",
+        "communicator": "winrm",
+        "winrm_username": "{{ user `winrm_username` }}",
+        "winrm_password": "{{ user `winrm_password` }}",
+        "winrm_use_ssl": true,
+        "winrm_insecure": true,
+        "winrm_port": 5986,
+        "winrm_timeout": "5m",
+        "storage_account": "{{ user `azure_storage_account` }}",
+        "resource_group_name": "{{ user `azure_resource_group` }}",
+        "vm_size": "{{ user `instance_type` }}"
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "powershell",
+        "inline": [
+          "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))",
+          "C:/ProgramData/chocolatey/choco install git -y",
+          "C:/ProgramData/chocolatey/choco install GoogleChrome -y",
+          "C:/ProgramData/chocolatey/choco install VisualStudioCode -y",
+          "C:/ProgramData/chocolatey/choco install habitat -y",
+          "C:/ProgramData/chocolatey/choco install jq -y",
+          "New-NetFirewallRule -DisplayName \"Habitat TCP\" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 9631,9638",
+          "New-NetFirewallRule -DisplayName \"Habitat UDP\" -Direction Inbound -Action Allow -Protocol UDP -LocalPort 9638",
+          "New-Item c:/sxs -ItemType Directory",
+          "$wc = New-Object System.Net.WebClient",
+          "$wc.DownloadFile('{{ user `ISO_URL` }}', 'C:\\Users\\hab\\{{user `ISO_Name` }}')"
+        ]
+      },
+      {
+        "type": "windows-shell",
+        "inline": [
+            "C:\\Windows\\System32\\sysprep\\sysprep.exe /quiet /generalize /oobe /shutdown"
+        ]
+    } 
+    ]
+  }
