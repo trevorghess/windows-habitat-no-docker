@@ -251,13 +251,18 @@ resource "azurerm_virtual_machine" "workstation" {
     }
   }
 
+  storage_image_reference {
+    publisher = "MicrosoftWindowsServer"
+    offer     = "WindowsServer"
+    sku       = "2016-Datacenter-with-Containers"
+    version   = "2016.127.20180820"
+  }
+
   storage_os_disk {
-    name          = "${var.tag_application}-workstation-osdisk"
-    os_type       = "windows"
-    image_uri     = "https://modernizestorage.blob.core.windows.net/system/Microsoft.Compute/Images/images/${var.image_name}"
-    vhd_uri       = "https://${var.azure_storage_account}.blob.core.windows.net/vhds/${var.tag_application}-${var.contact_shortname}-${timestamp()}-osdisk.vhd"
-    caching       = "ReadWrite"
-    create_option = "FromImage"
+    name              = "${var.tag_application}-workstation-osdisk"
+    caching           = "ReadWrite"
+    create_option     = "FromImage"
+    managed_disk_type = "Standard_LRS"
   }
 
   tags {
