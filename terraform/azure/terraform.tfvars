@@ -1,6 +1,5 @@
 "tag_contact" = "your name"
 "contact_shortname" = "yourshortname"
-"image_name" = "VHD from Launch Instructions"
 "windows_user" = "hab"
 "windows_password" = "n0t@r34lp@ssword!"
 "azure_region" = "East US"
